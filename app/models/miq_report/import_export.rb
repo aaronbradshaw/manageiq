@@ -35,8 +35,9 @@ module MiqReport::ImportExport
       report[:db_options] ||= report["db_options"]
       report[:db_options].deep_symbolize_keys! if report[:db_options]
 
-      user = options[:user] || User.find_by_userid(options[:userid])
-      report.merge!("miq_group_id" => user.current_group_id, "user_id" => user.id)
+      user = options[:user] || User.find_by_userid(options[:userid]) || User.find(report[:user_id])
+      group = options[:group] || report["miq_group_id"] || user.current_group_id
+      report.merge!("miq_group_id" => group, "user_id" => user.id)
 
       report["name"] = report.delete("menu_name")
       rep = MiqReport.find_by(:name => report["name"])
